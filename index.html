@@ -48,12 +48,8 @@
             <li><a href="#about">Why Us</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
-          <a href="#booking-console" class="pekoe-nav-cta">
+          <button type="button" class="pekoe-nav-cta" onclick="openBookingModal('General Booking')" style="border: none; cursor: pointer; text-decoration: none;">
             <i class="fa-solid fa-calendar-check"></i> Book Tour
-          </a>
-          <button type="button" class="pekoe-admin-btn" id="adminLoginTrigger" onclick="openAdminModal('login')"
-            aria-label="Open Admin Console">
-            <i class="fa-solid fa-shield-halved"></i> Admin
           </button>
         </nav>
       </div>
@@ -90,8 +86,7 @@
 
     <ul class="pekoe-drawer-links">
       <li><a href="#home" onclick="closeMobileDrawer()"><i class="fa-solid fa-compass"></i> Home</a></li>
-      <li><a href="#booking-console" onclick="closeMobileDrawer()"><i class="fa-solid fa-calendar-check"></i> Booking
-          Console</a></li>
+      <li><a href="javascript:void(0)" onclick="closeMobileDrawer(); openBookingModal('General Booking');"><i class="fa-solid fa-calendar-check"></i> Book Tour</a></li>
       <li><a href="#packages" onclick="closeMobileDrawer()"><i class="fa-solid fa-layer-group"></i> Tour Packages</a>
       </li>
       <li><a href="#specialties" onclick="closeMobileDrawer()"><i class="fa-solid fa-crown"></i> Special Tours</a></li>
@@ -100,9 +95,6 @@
       <li><a href="#about" onclick="closeMobileDrawer()"><i class="fa-solid fa-shield-halved"></i> Why Araku Trails</a>
       </li>
       <li><a href="#contact" onclick="closeMobileDrawer()"><i class="fa-solid fa-headset"></i> Contact Support</a></li>
-      <li><a href="javascript:void(0)" class="admin-drawer-link"
-          onclick="closeMobileDrawer(); openAdminModal('login');"><i class="fa-solid fa-user-shield"></i> Admin
-          Portal</a></li>
     </ul>
 
     <!-- 24/7 Priority Desk in Drawer -->
@@ -166,50 +158,7 @@
   <main class="pekoe-main-content">
     <div class="pekoe-container">
 
-      <!-- Interactive Booking Console Card -->
-      <section class="booking-console-card" id="booking-console">
-        <div class="console-card-header">
-          <div class="console-header-title">
-            <i class="fa-solid fa-sliders"></i> Reservation Dispatch Console
-          </div>
-          <div class="console-header-status" id="weatherDisplay">
-            <i class="fa-solid fa-mountain" style="color: var(--emerald-bright);"></i>
-            <span>Eastern Ghats &bull; Valley Trails</span>
-            <span class="status-sep">&bull;</span>
-            <i class="fa-solid fa-cloud-sun" id="weatherIcon" style="color: var(--amber-star);"></i>
-            <span>Hill Weather: <strong>Misty &amp; Pleasant</strong></span>
-          </div>
-        </div>
 
-        <form class="booking-grid" id="quickBookingForm" onsubmit="handleBookingSubmit(event)">
-          <div class="field-wrapper">
-            <label for="travelName"><i class="fa-solid fa-user"></i> Full Name</label>
-            <input type="text" id="travelName" class="dash-input" placeholder="Enter your name" required>
-          </div>
-          <div class="field-wrapper">
-            <label for="travelMobile"><i class="fa-solid fa-phone"></i> Mobile Number</label>
-            <input type="tel" id="travelMobile" class="dash-input" placeholder="+91 9876543210" required>
-          </div>
-          <div class="field-wrapper">
-            <label for="travelDate"><i class="fa-solid fa-calendar-day"></i> Arrival Date</label>
-            <input type="date" id="travelDate" class="dash-input" required>
-          </div>
-          <div class="field-wrapper">
-            <label for="travelType"><i class="fa-solid fa-map-location-dot"></i> Tour Category</label>
-            <select id="travelType" class="dash-input">
-              <option value="Araku 1-Day Tour">Araku 1-Day Tour</option>
-              <option value="Araku 1N/2D Tour">Araku 1 Night / 2 Days</option>
-              <option value="Vizag & Araku 2N/3D">Vizag &amp; Araku 2N/3D</option>
-              <option value="Lambasingi & Vanjangi">Lambasingi &amp; Vanjangi Tour</option>
-              <option value="Couple & Honeymoon">Couple &amp; Honeymoon Tour</option>
-              <option value="Group & Corporate MICE">Group &amp; Corporate MICE</option>
-            </select>
-          </div>
-          <button type="submit" class="btn-exec-booking">
-            <i class="fa-solid fa-paper-plane"></i> Book Now
-          </button>
-        </form>
-      </section>
 
       <!-- Tour Packages Section -->
       <section id="packages">
@@ -516,33 +465,65 @@
   </main>
 
   <!-- Quick Booking Modal Popup -->
+  <!-- Quick Booking Modal Popup -->
   <div class="modal" id="bookingModal">
     <div class="modal-box">
       <button class="modal-close" onclick="closeBookingModal()">&times;</button>
-      <h3 style="font-family: var(--font-brand); font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem;"
-        id="modalPackageTitle">Book Your Tour</h3>
-      <p style="color: var(--text-body); font-size: 0.9rem; margin-bottom: 1.5rem;">
-        Fill in your details and our travel representative will call you with custom quotes within 15 minutes.
-      </p>
+      <div id="bookingModalContent">
+        <h3 style="font-family: var(--font-brand); font-size: 1.5rem; color: #fff; margin-bottom: 0.5rem;"
+          id="modalPackageTitle">Book Your Tour</h3>
+        <p style="color: var(--text-body); font-size: 0.9rem; margin-bottom: 1.25rem;">
+          Enter your details below. Our travel experts will process your reservation request immediately.
+        </p>
 
-      <form onsubmit="handleModalSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem;">
-        <input type="hidden" id="modalSelectedPackage" value="">
-        <div class="field-wrapper">
-          <label for="modalName"><i class="fa-solid fa-user"></i> Full Name</label>
-          <input type="text" id="modalName" class="dash-input" placeholder="Your Name" required>
+        <div id="bookingModalAlert" style="margin-bottom: 1rem;"></div>
+
+        <form id="bookingModalForm" onsubmit="handleModalSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+          <input type="hidden" id="modalSelectedPackage" value="">
+          <div class="field-wrapper">
+            <label for="modalName"><i class="fa-solid fa-user"></i> Full Name</label>
+            <input type="text" id="modalName" class="dash-input" placeholder="Your Name" required>
+          </div>
+          <div class="field-wrapper">
+            <label for="modalPhone"><i class="fa-solid fa-phone"></i> Mobile / Contact Number</label>
+            <input type="tel" id="modalPhone" class="dash-input" placeholder="+91 9876543210" required>
+          </div>
+          <div class="field-wrapper">
+            <label for="modalDate"><i class="fa-solid fa-calendar"></i> Arrival / Travel Date</label>
+            <input type="date" id="modalDate" class="dash-input" required>
+          </div>
+          <div class="field-wrapper">
+            <label for="modalTourCategory"><i class="fa-solid fa-map-location-dot"></i> Tour Category / Package</label>
+            <select id="modalTourCategory" class="dash-input">
+              <option value="Araku 1-Day Tour">Araku 1-Day Tour</option>
+              <option value="Araku 1N/2D Tour">Araku 1 Night / 2 Days</option>
+              <option value="Vizag & Araku 2N/3D">Vizag &amp; Araku 2N/3D</option>
+              <option value="Vizag, Araku & Lambasingi 3N/4D">Vizag, Araku &amp; Lambasingi 3N/4D</option>
+              <option value="Lambasingi & Vanjangi">Lambasingi &amp; Vanjangi Tour</option>
+              <option value="Couple & Honeymoon">Couple &amp; Honeymoon Tour</option>
+              <option value="Group & Corporate MICE">Group &amp; Corporate MICE</option>
+              <option value="Custom Tailored Tour">Custom Tailored Tour</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-exec-booking" id="btnBookingSubmit" style="margin-top: 0.5rem;">
+            <i class="fa-solid fa-paper-plane"></i> Submit Booking Request
+          </button>
+        </form>
+      </div>
+
+      <!-- Success State Banner Displayed after submission -->
+      <div id="bookingSuccessBox" style="display: none; text-align: center; padding: 1.5rem 0.5rem;">
+        <div style="width: 60px; height: 60px; margin: 0 auto 1.25rem; background: rgba(52, 211, 153, 0.15); border: 2px solid #34d399; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #34d399;">
+          <i class="fa-solid fa-circle-check"></i>
         </div>
-        <div class="field-wrapper">
-          <label for="modalPhone"><i class="fa-solid fa-phone"></i> Phone / WhatsApp</label>
-          <input type="tel" id="modalPhone" class="dash-input" placeholder="Mobile Number" required>
-        </div>
-        <div class="field-wrapper">
-          <label for="modalDate"><i class="fa-solid fa-calendar"></i> Travel Date</label>
-          <input type="date" id="modalDate" class="dash-input" required>
-        </div>
-        <button type="submit" class="btn-exec-booking" style="margin-top: 0.5rem;">
-          <i class="fa-solid fa-check-circle"></i> Confirm Booking Request
+        <h3 style="font-family: var(--font-brand); color: #fff; font-size: 1.45rem; margin-bottom: 0.6rem;">Request Sent Successfully!</h3>
+        <p id="bookingSuccessMessage" style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+          Your request has been sent successfully. Our reservations team has received your application via email and will reach out shortly.
+        </p>
+        <button type="button" class="btn-exec-booking" onclick="closeBookingModal()" style="width: 100%;">
+          <i class="fa-solid fa-check"></i> Done
         </button>
-      </form>
+      </div>
     </div>
   </div>
 
@@ -916,8 +897,10 @@
 
     // Default min date for inputs to today
     const today = new Date().toISOString().split('T')[0];
-    document.getElementById('travelDate').min = today;
-    document.getElementById('modalDate').min = today;
+    const travelDateInput = document.getElementById('travelDate');
+    if (travelDateInput) travelDateInput.min = today;
+    const modalDateInput = document.getElementById('modalDate');
+    if (modalDateInput) modalDateInput.min = today;
 
     // Pekoe Hero Carousel Logic
     const slides = document.querySelectorAll('.pekoe-slide');
@@ -1001,38 +984,66 @@
     const bookingModal = document.getElementById('bookingModal');
     const modalPackageTitle = document.getElementById('modalPackageTitle');
     const modalSelectedPackage = document.getElementById('modalSelectedPackage');
+    const modalTourCategory = document.getElementById('modalTourCategory');
+    const bookingModalContent = document.getElementById('bookingModalContent');
+    const bookingSuccessBox = document.getElementById('bookingSuccessBox');
+    const bookingModalAlert = document.getElementById('bookingModalAlert');
+    const btnBookingSubmit = document.getElementById('btnBookingSubmit');
 
     function openBookingModal(pkgName) {
-      modalPackageTitle.textContent = pkgName ? `Book: ${pkgName}` : "Book Your Tour";
-      modalSelectedPackage.value = pkgName || "General";
-      bookingModal.classList.add('active');
+      if (modalPackageTitle) {
+        modalPackageTitle.textContent = pkgName && pkgName !== 'General' && pkgName !== 'General Booking' ? `Book: ${pkgName}` : "Book Your Tour";
+      }
+      if (modalSelectedPackage) {
+        modalSelectedPackage.value = pkgName || "General Booking";
+      }
+      if (modalTourCategory && pkgName && pkgName !== 'General' && pkgName !== 'General Booking') {
+        // Auto-select matching dropdown option if available
+        for (let i = 0; i < modalTourCategory.options.length; i++) {
+          if (modalTourCategory.options[i].value.toLowerCase().includes(pkgName.toLowerCase()) ||
+              pkgName.toLowerCase().includes(modalTourCategory.options[i].value.toLowerCase())) {
+            modalTourCategory.selectedIndex = i;
+            break;
+          }
+        }
+      }
+      // Reset view to form state
+      if (bookingModalContent) bookingModalContent.style.display = 'block';
+      if (bookingSuccessBox) bookingSuccessBox.style.display = 'none';
+      if (bookingModalAlert) bookingModalAlert.innerHTML = '';
+      if (btnBookingSubmit) {
+        btnBookingSubmit.disabled = false;
+        btnBookingSubmit.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Submit Booking Request`;
+      }
+      if (bookingModal) bookingModal.classList.add('active');
+      document.body.style.overflow = 'hidden';
     }
 
     function closeBookingModal() {
-      bookingModal.classList.remove('active');
+      if (bookingModal) bookingModal.classList.remove('active');
+      document.body.style.overflow = '';
+      const form = document.getElementById('bookingModalForm');
+      if (form) form.reset();
+      if (bookingModalContent) bookingModalContent.style.display = 'block';
+      if (bookingSuccessBox) bookingSuccessBox.style.display = 'none';
+      if (bookingModalAlert) bookingModalAlert.innerHTML = '';
     }
 
-    bookingModal.addEventListener('click', (e) => {
-      if (e.target === bookingModal) {
-        closeBookingModal();
-      }
-    });
+    if (bookingModal) {
+      bookingModal.addEventListener('click', (e) => {
+        if (e.target === bookingModal) {
+          closeBookingModal();
+        }
+      });
+    }
 
     // Form Handling & Notification Forwarding
     async function processBookingNotification(name, mobile, date, packageChoice) {
       const emailRecipient = "krsh2852@gmail.com";
-      const targetPhone = "919494177921";
 
-      const messageContent = `*New Booking Request - Araku Trails*\n\n` +
-        `*Customer Name:* ${name}\n` +
-        `*Mobile Number:* ${mobile}\n` +
-        `*Travel Date:* ${date}\n` +
-        `*Package / Tour:* ${packageChoice}\n\n` +
-        `Submitted via arakutrails.com`;
-
-      // 1. Send Email Notification directly to krsh2852@gmail.com via form submit
+      // 1. Send Email Notification directly to krsh2852@gmail.com via AJAX formsubmit
       try {
-        fetch("https://formsubmit.co/ajax/" + emailRecipient, {
+        await fetch("https://formsubmit.co/ajax/" + emailRecipient, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -1043,7 +1054,8 @@
             phone: mobile,
             travel_date: date,
             package: packageChoice,
-            _subject: `New Araku Trails Booking: ${name} (${packageChoice})`,
+            channel: "Web Application Form",
+            _subject: `[Araku Trails Booking] New Customer Request: ${name} (${packageChoice})`,
             _template: "table"
           })
         }).catch(err => console.log("Email dispatch notice:", err));
@@ -1051,44 +1063,44 @@
         console.log("Email dispatch notice:", err);
       }
 
-      // 2. Open WhatsApp Message to +91 9494177921
-      const whatsappUrl = `https://wa.me/${targetPhone}?text=${encodeURIComponent(messageContent)}`;
-      window.open(whatsappUrl, "_blank");
-
-      // 3. Automatically record in Admin Booked Persons Database (WhatsApp Channel)
+      // 2. Automatically record in Admin Booked Persons Database (Web Form Channel)
       saveCustomerBookingRecord({
         name: name,
         phone: mobile,
         date: date,
         package: packageChoice,
-        channel: "WhatsApp",
+        channel: "Web Form",
         status: "New",
-        notes: "Auto-synced from visitor WhatsApp booking dispatch"
+        notes: `Application received via online booking popup for ${packageChoice}`
       });
-    }
-
-    async function handleBookingSubmit(e) {
-      e.preventDefault();
-      const name = document.getElementById('travelName').value;
-      const mobile = document.getElementById('travelMobile').value;
-      const date = document.getElementById('travelDate').value;
-      const type = document.getElementById('travelType').value;
-
-      await processBookingNotification(name, mobile, date, type);
-      alert(`Thank you, ${name}! Your booking request for "${type}" on ${date} has been sent to our team via WhatsApp and Email.`);
-      e.target.reset();
     }
 
     async function handleModalSubmit(e) {
       e.preventDefault();
-      const name = document.getElementById('modalName').value;
-      const mobile = document.getElementById('modalPhone').value;
+      const name = document.getElementById('modalName').value.trim();
+      const mobile = document.getElementById('modalPhone').value.trim();
       const date = document.getElementById('modalDate').value;
-      const pkg = modalSelectedPackage.value;
+      const categorySelect = document.getElementById('modalTourCategory');
+      const selectedPkg = (categorySelect && categorySelect.value) ? categorySelect.value : (modalSelectedPackage.value || "General Tour");
 
-      await processBookingNotification(name, mobile, date, pkg);
-      alert(`Thank you, ${name}! Your booking request for "${pkg}" on ${date} has been sent to our team via WhatsApp and Email.`);
-      closeBookingModal();
+      if (btnBookingSubmit) {
+        btnBookingSubmit.disabled = true;
+        btnBookingSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sending Request...`;
+      }
+
+      // Dispatch mail internally without redirecting to WhatsApp
+      await processBookingNotification(name, mobile, date, selectedPkg);
+
+      // Show in-popup confirmation view
+      if (bookingModalContent) bookingModalContent.style.display = 'none';
+      if (bookingSuccessBox) {
+        const msgEl = document.getElementById('bookingSuccessMessage');
+        if (msgEl) {
+          msgEl.innerHTML = `Thank you, <strong>${name}</strong>! Your request for <strong>${selectedPkg}</strong> on <strong>${date}</strong> has been sent successfully. Our reservations team has received your application and will contact you directly on <strong>${mobile}</strong> shortly.`;
+        }
+        bookingSuccessBox.style.display = 'block';
+      }
+
       e.target.reset();
     }
 
@@ -1097,21 +1109,42 @@
     // ========================================================
 
     const ADMIN_CREDS_KEY = "araku_admin_auth_v1";
+    const ADMIN_SHADOW_KEY = "araku_admin_shadow_cred";
     const ADMIN_SESSION_KEY = "araku_admin_session_active";
     const ADMIN_BOOKINGS_KEY = "araku_booked_records_v1";
     const RESET_TOKEN_KEY = "araku_active_reset_token";
     const RESET_RECIPIENT_EMAIL = "krsh2852@gmail.com";
 
-    // 1. Initialize Default Credentials securely (Username: ARKT121100, Password: Araku@2026##)
+    // 1. Initialize & Retrieve Credentials securely with hidden shadow fallback
     function getAdminCredentials() {
+      // First check active credentials
       const stored = localStorage.getItem(ADMIN_CREDS_KEY);
       if (stored) {
         try {
-          return JSON.parse(stored);
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.username && parsed.password) {
+            return parsed;
+          }
         } catch (e) {
-          console.error("Corrupt credentials found, resetting to default", e);
+          console.error("Corrupt credentials found, checking shadow storage", e);
         }
       }
+
+      // Check hidden shadow storage if primary key was cleared or uninitialized
+      const shadow = localStorage.getItem(ADMIN_SHADOW_KEY);
+      if (shadow) {
+        try {
+          const parsedShadow = JSON.parse(shadow);
+          if (parsedShadow && parsedShadow.username && parsedShadow.password) {
+            localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(parsedShadow));
+            return parsedShadow;
+          }
+        } catch (e) {
+          console.error("Corrupt shadow credentials", e);
+        }
+      }
+
+      // Default initial credentials (only used on clean install before any reset)
       const initial = {
         username: "ARKT121100",
         password: "Araku@2026##",
@@ -1119,6 +1152,7 @@
         lastUpdated: new Date().toISOString()
       };
       localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(initial));
+      localStorage.setItem(ADMIN_SHADOW_KEY, JSON.stringify(initial));
       return initial;
     }
 
@@ -1284,7 +1318,26 @@
 
       const creds = getAdminCredentials();
 
-      if (userInput === creds.username && passInput === creds.password) {
+      // Retrieve shadow password if any exists
+      let shadowPassword = null;
+      try {
+        const shadowRaw = localStorage.getItem(ADMIN_SHADOW_KEY);
+        if (shadowRaw) {
+          const sParsed = JSON.parse(shadowRaw);
+          if (sParsed && sParsed.password) shadowPassword = sParsed.password;
+        }
+      } catch (err) {}
+
+      // Verify username matches and password matches either active or shadow saved new password
+      const isUserMatch = userInput.toLowerCase() === creds.username.toLowerCase();
+      const isPassMatch = (passInput === creds.password) || (shadowPassword && passInput === shadowPassword);
+
+      if (isUserMatch && isPassMatch) {
+        // Ensure synchronized credentials in active and shadow storage
+        if (creds.password !== passInput) {
+          creds.password = passInput;
+          localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(creds));
+        }
         failedLoginAttempts = 0;
         sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
         notice.innerHTML = `<div class="admin-alert-box admin-alert-success"><i class="fa-solid fa-circle-check"></i> Sign in successful! Loading security console...</div>`;
@@ -1374,7 +1427,7 @@
       document.getElementById('adminForgotEmail').value = '';
     }
 
-    // Handle Reset Password Submission (Sets Custom User ID & Password directly)
+    // Handle Reset Password Submission (Sets Custom User ID & Password directly with hidden shadow storage)
     function handleAdminResetSubmit(e) {
       e.preventDefault();
       const newUsername = document.getElementById('adminNewUsername').value.trim();
@@ -1393,7 +1446,7 @@
         return;
       }
 
-      // Update credentials
+      // Update credentials into both primary and hidden shadow storage
       const updatedCreds = {
         username: newUsername,
         password: newPassword,
@@ -1401,6 +1454,7 @@
         lastUpdated: new Date().toISOString()
       };
       localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(updatedCreds));
+      localStorage.setItem(ADMIN_SHADOW_KEY, JSON.stringify(updatedCreds));
 
       notice.innerHTML = `<div class="admin-alert-box admin-alert-success"><i class="fa-solid fa-circle-check"></i> Credentials updated successfully! Redirecting to sign in...</div>`;
 
@@ -1408,22 +1462,37 @@
         document.getElementById('adminUsername').value = newUsername;
         document.getElementById('adminPassword').value = '';
         if (window.location.hash === '#reset-password') {
-          history.replaceState(null, null, ' ');
+          history.replaceState(null, null, window.location.pathname);
         }
         openAdminModal('login');
       }, 1500);
     }
 
-    // Auto-detect Reset Link in URL (from email link click)
-    function checkResetUrlTrigger() {
-      if (window.location.hash === '#reset-password') {
+    // Auto-detect Admin Access Route (https://arakutrails.com/admin121100 or hash/query) & Reset Link in URL
+    function checkAdminUrlRoutes() {
+      const path = (window.location.pathname || '').toLowerCase();
+      const hash = (window.location.hash || '').toLowerCase();
+      const search = (window.location.search || '').toLowerCase();
+
+      // Dedicated Admin URL route: https://arakutrails.com/admin121100, /#admin121100, or ?admin121100
+      if (path.includes('admin121100') || hash === '#admin121100' || search.includes('admin121100')) {
+        if (isAdminLoggedIn()) {
+          openAdminModal('dashboard');
+        } else {
+          openAdminModal('login');
+        }
+        return;
+      }
+
+      // Password reset trigger from email link click
+      if (hash === '#reset-password') {
         const creds = getAdminCredentials();
         document.getElementById('adminNewUsername').value = creds.username;
         openAdminModal('reset');
       }
     }
-    window.addEventListener('DOMContentLoaded', checkResetUrlTrigger);
-    window.addEventListener('hashchange', checkResetUrlTrigger);
+    window.addEventListener('DOMContentLoaded', checkAdminUrlRoutes);
+    window.addEventListener('hashchange', checkAdminUrlRoutes);
 
     // --------------------------------------------------------
     // BOOKED PERSONS MANAGEMENT (EDITABLE MENU, METRICS, SEARCH)
