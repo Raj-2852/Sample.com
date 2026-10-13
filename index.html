@@ -48,7 +48,8 @@
             <li><a href="#about">Why Us</a></li>
             <li><a href="#contact">Contact</a></li>
           </ul>
-          <button type="button" class="pekoe-nav-cta" onclick="openBookingModal('General Booking')" style="border: none; cursor: pointer; text-decoration: none;">
+          <button type="button" class="pekoe-nav-cta" onclick="openBookingModal('General Booking')"
+            style="border: none; cursor: pointer; text-decoration: none;">
             <i class="fa-solid fa-calendar-check"></i> Book Tour
           </button>
         </nav>
@@ -86,7 +87,8 @@
 
     <ul class="pekoe-drawer-links">
       <li><a href="#home" onclick="closeMobileDrawer()"><i class="fa-solid fa-compass"></i> Home</a></li>
-      <li><a href="javascript:void(0)" onclick="closeMobileDrawer(); openBookingModal('General Booking');"><i class="fa-solid fa-calendar-check"></i> Book Tour</a></li>
+      <li><a href="javascript:void(0)" onclick="closeMobileDrawer(); openBookingModal('General Booking');"><i
+            class="fa-solid fa-calendar-check"></i> Book Tour</a></li>
       <li><a href="#packages" onclick="closeMobileDrawer()"><i class="fa-solid fa-layer-group"></i> Tour Packages</a>
       </li>
       <li><a href="#specialties" onclick="closeMobileDrawer()"><i class="fa-solid fa-crown"></i> Special Tours</a></li>
@@ -478,7 +480,8 @@
 
         <div id="bookingModalAlert" style="margin-bottom: 1rem;"></div>
 
-        <form id="bookingModalForm" onsubmit="handleModalSubmit(event)" style="display: flex; flex-direction: column; gap: 1rem;">
+        <form id="bookingModalForm" onsubmit="handleModalSubmit(event)"
+          style="display: flex; flex-direction: column; gap: 1rem;">
           <input type="hidden" id="modalSelectedPackage" value="">
           <div class="field-wrapper">
             <label for="modalName"><i class="fa-solid fa-user"></i> Full Name</label>
@@ -513,12 +516,16 @@
 
       <!-- Success State Banner Displayed after submission -->
       <div id="bookingSuccessBox" style="display: none; text-align: center; padding: 1.5rem 0.5rem;">
-        <div style="width: 60px; height: 60px; margin: 0 auto 1.25rem; background: rgba(52, 211, 153, 0.15); border: 2px solid #34d399; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #34d399;">
+        <div
+          style="width: 60px; height: 60px; margin: 0 auto 1.25rem; background: rgba(52, 211, 153, 0.15); border: 2px solid #34d399; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: #34d399;">
           <i class="fa-solid fa-circle-check"></i>
         </div>
-        <h3 style="font-family: var(--font-brand); color: #fff; font-size: 1.45rem; margin-bottom: 0.6rem;">Request Sent Successfully!</h3>
-        <p id="bookingSuccessMessage" style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
-          Your request has been sent successfully. Our reservations team has received your application via email and will reach out shortly.
+        <h3 style="font-family: var(--font-brand); color: #fff; font-size: 1.45rem; margin-bottom: 0.6rem;">Request Sent
+          Successfully!</h3>
+        <p id="bookingSuccessMessage"
+          style="color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem;">
+          Your request has been sent successfully. Our reservations team has received your application via email and
+          will reach out shortly.
         </p>
         <button type="button" class="btn-exec-booking" onclick="closeBookingModal()" style="width: 100%;">
           <i class="fa-solid fa-check"></i> Done
@@ -1001,7 +1008,7 @@
         // Auto-select matching dropdown option if available
         for (let i = 0; i < modalTourCategory.options.length; i++) {
           if (modalTourCategory.options[i].value.toLowerCase().includes(pkgName.toLowerCase()) ||
-              pkgName.toLowerCase().includes(modalTourCategory.options[i].value.toLowerCase())) {
+            pkgName.toLowerCase().includes(modalTourCategory.options[i].value.toLowerCase())) {
             modalTourCategory.selectedIndex = i;
             break;
           }
@@ -1041,29 +1048,7 @@
     async function processBookingNotification(name, mobile, date, packageChoice) {
       const emailRecipient = "krsh2852@gmail.com";
 
-      // 1. Send Email Notification directly to krsh2852@gmail.com via AJAX formsubmit
-      try {
-        await fetch("https://formsubmit.co/ajax/" + emailRecipient, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-          },
-          body: JSON.stringify({
-            name: name,
-            phone: mobile,
-            travel_date: date,
-            package: packageChoice,
-            channel: "Web Application Form",
-            _subject: `[Araku Trails Booking] New Customer Request: ${name} (${packageChoice})`,
-            _template: "table"
-          })
-        }).catch(err => console.log("Email dispatch notice:", err));
-      } catch (err) {
-        console.log("Email dispatch notice:", err);
-      }
-
-      // 2. Automatically record in Admin Booked Persons Database (Web Form Channel)
+      // 1. Immediately record in Admin Booked Persons Database (Web Form Channel, instantly appended to top)
       saveCustomerBookingRecord({
         name: name,
         phone: mobile,
@@ -1073,6 +1058,33 @@
         status: "New",
         notes: `Application received via online booking popup for ${packageChoice}`
       });
+
+      // 2. Send Email Notification quickly to krsh2852@gmail.com via AJAX formsubmit with 4-second timeout guarantee
+      const emailPayload = {
+        name: name,
+        phone: mobile,
+        travel_date: date,
+        package: packageChoice,
+        channel: "Web Application Form",
+        _subject: `[Araku Trails Booking] New Customer Request: ${name} (${packageChoice})`,
+        _template: "table"
+      };
+
+      try {
+        const fetchPromise = fetch("https://formsubmit.co/ajax/" + emailRecipient, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Accept": "application/json"
+          },
+          body: JSON.stringify(emailPayload)
+        });
+
+        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 3500));
+        await Promise.race([fetchPromise, timeoutPromise]);
+      } catch (err) {
+        console.log("Email dispatch notice:", err);
+      }
     }
 
     async function handleModalSubmit(e) {
@@ -1088,7 +1100,7 @@
         btnBookingSubmit.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Sending Request...`;
       }
 
-      // Dispatch mail internally without redirecting to WhatsApp
+      // Process booking: records to admin list immediately and triggers FormSubmit email
       await processBookingNotification(name, mobile, date, selectedPkg);
 
       // Show in-popup confirmation view
@@ -1108,51 +1120,58 @@
     // SECURE ADMIN PORTAL & BOOKED PERSONS MANAGEMENT SYSTEM
     // ========================================================
 
-    const ADMIN_CREDS_KEY = "araku_admin_auth_v1";
-    const ADMIN_SHADOW_KEY = "araku_admin_shadow_cred";
+    const ADMIN_CREDS_KEY = "araku_admin_creds_v2";
+    const ADMIN_SHADOW_KEY = "araku_admin_shadow_password_v2";
     const ADMIN_SESSION_KEY = "araku_admin_session_active";
     const ADMIN_BOOKINGS_KEY = "araku_booked_records_v1";
     const RESET_TOKEN_KEY = "araku_active_reset_token";
     const RESET_RECIPIENT_EMAIL = "krsh2852@gmail.com";
+    const DEFAULT_ADMIN_USER = "ARKT121100";
+    const DEFAULT_ADMIN_PASS = "Araku@2026##";
 
-    // 1. Initialize & Retrieve Credentials securely with hidden shadow fallback
+    // 1. Initialize & Retrieve Credentials securely with hidden password storage
     function getAdminCredentials() {
-      // First check active credentials
+      // First check active credentials from local storage
       const stored = localStorage.getItem(ADMIN_CREDS_KEY);
       if (stored) {
         try {
           const parsed = JSON.parse(stored);
           if (parsed && parsed.username && parsed.password) {
+            // Check if there is an updated hidden/shadow password to synchronize
+            const shadowPass = localStorage.getItem(ADMIN_SHADOW_KEY);
+            if (shadowPass && shadowPass.trim() && shadowPass !== parsed.password) {
+              parsed.password = shadowPass.trim();
+              localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(parsed));
+            }
             return parsed;
           }
         } catch (e) {
-          console.error("Corrupt credentials found, checking shadow storage", e);
+          console.error("Credentials parse error, checking shadow store", e);
         }
       }
 
-      // Check hidden shadow storage if primary key was cleared or uninitialized
-      const shadow = localStorage.getItem(ADMIN_SHADOW_KEY);
-      if (shadow) {
-        try {
-          const parsedShadow = JSON.parse(shadow);
-          if (parsedShadow && parsedShadow.username && parsedShadow.password) {
-            localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(parsedShadow));
-            return parsedShadow;
-          }
-        } catch (e) {
-          console.error("Corrupt shadow credentials", e);
-        }
+      // Check hidden shadow storage if primary key was missing or reset
+      const shadowPass = localStorage.getItem(ADMIN_SHADOW_KEY);
+      if (shadowPass && shadowPass.trim()) {
+        const restored = {
+          username: DEFAULT_ADMIN_USER,
+          password: shadowPass.trim(),
+          authorizedEmail: RESET_RECIPIENT_EMAIL,
+          lastUpdated: new Date().toISOString()
+        };
+        localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(restored));
+        return restored;
       }
 
-      // Default initial credentials (only used on clean install before any reset)
+      // Initial default setup: first save default password into hidden storage, then into active creds
+      localStorage.setItem(ADMIN_SHADOW_KEY, DEFAULT_ADMIN_PASS);
       const initial = {
-        username: "ARKT121100",
-        password: "Araku@2026##",
+        username: DEFAULT_ADMIN_USER,
+        password: DEFAULT_ADMIN_PASS,
         authorizedEmail: RESET_RECIPIENT_EMAIL,
         lastUpdated: new Date().toISOString()
       };
       localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(initial));
-      localStorage.setItem(ADMIN_SHADOW_KEY, JSON.stringify(initial));
       return initial;
     }
 
@@ -1214,16 +1233,15 @@
         phone: record.phone,
         date: record.date,
         package: record.package,
-        channel: record.channel || "WhatsApp",
+        channel: record.channel || "Web Form",
         status: record.status || "New",
         notes: record.notes || "Dispatched via customer inquiry",
         timestamp: new Date().toISOString()
       };
+      // Immediately append newly submitted customer details to the top of the list
       bookings.unshift(newEntry);
       localStorage.setItem(ADMIN_BOOKINGS_KEY, JSON.stringify(bookings));
-      if (isAdminLoggedIn()) {
-        renderAdminBookingsTable();
-      }
+      renderAdminBookingsTable();
     }
 
     // Modal Display Management
@@ -1317,27 +1335,20 @@
       const passInput = document.getElementById('adminPassword').value;
 
       const creds = getAdminCredentials();
+      const shadowPass = localStorage.getItem(ADMIN_SHADOW_KEY) || creds.password;
 
-      // Retrieve shadow password if any exists
-      let shadowPassword = null;
-      try {
-        const shadowRaw = localStorage.getItem(ADMIN_SHADOW_KEY);
-        if (shadowRaw) {
-          const sParsed = JSON.parse(shadowRaw);
-          if (sParsed && sParsed.password) shadowPassword = sParsed.password;
-        }
-      } catch (err) {}
-
-      // Verify username matches and password matches either active or shadow saved new password
+      // Verify username matches and password matches the latest updated/rewritten password
       const isUserMatch = userInput.toLowerCase() === creds.username.toLowerCase();
-      const isPassMatch = (passInput === creds.password) || (shadowPassword && passInput === shadowPassword);
+      const isPassMatch = (passInput === creds.password) || (passInput === shadowPass);
 
       if (isUserMatch && isPassMatch) {
-        // Ensure synchronized credentials in active and shadow storage
+        // Guarantee synchronization for future logins
         if (creds.password !== passInput) {
           creds.password = passInput;
           localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(creds));
         }
+        localStorage.setItem(ADMIN_SHADOW_KEY, passInput);
+
         failedLoginAttempts = 0;
         sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
         notice.innerHTML = `<div class="admin-alert-box admin-alert-success"><i class="fa-solid fa-circle-check"></i> Sign in successful! Loading security console...</div>`;
@@ -1427,7 +1438,7 @@
       document.getElementById('adminForgotEmail').value = '';
     }
 
-    // Handle Reset Password Submission (Sets Custom User ID & Password directly with hidden shadow storage)
+    // Handle Reset Password Submission (Sets Custom User ID & Password, updates hidden password & rewrites active credentials)
     function handleAdminResetSubmit(e) {
       e.preventDefault();
       const newUsername = document.getElementById('adminNewUsername').value.trim();
@@ -1446,7 +1457,10 @@
         return;
       }
 
-      // Update credentials into both primary and hidden shadow storage
+      // 1. Immediately rewrite and update the hidden shadow password
+      localStorage.setItem(ADMIN_SHADOW_KEY, newPassword);
+
+      // 2. Rewrite the active credentials object for future logins
       const updatedCreds = {
         username: newUsername,
         password: newPassword,
@@ -1454,7 +1468,6 @@
         lastUpdated: new Date().toISOString()
       };
       localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(updatedCreds));
-      localStorage.setItem(ADMIN_SHADOW_KEY, JSON.stringify(updatedCreds));
 
       notice.innerHTML = `<div class="admin-alert-box admin-alert-success"><i class="fa-solid fa-circle-check"></i> Credentials updated successfully! Redirecting to sign in...</div>`;
 
