@@ -613,23 +613,23 @@
     </div>
   </div>
 
-  <!-- 3. Password Reset Form Modal -->
+  <!-- 3. Password Reset / Change Password Form Modal -->
   <div class="admin-modal-overlay" id="adminResetOverlay">
     <div class="admin-auth-card">
       <button class="admin-modal-close-btn" onclick="closeAdminModal('adminResetOverlay')"
         aria-label="Close">&times;</button>
       <div class="admin-badge-pill">
-        <i class="fa-solid fa-key"></i> Set New Credentials
+        <i class="fa-solid fa-key"></i> <span id="adminResetBadgeTitle">Set New Credentials</span>
       </div>
-      <h3 class="admin-card-title">Create New Credentials</h3>
-      <p class="admin-card-sub">Choose a custom User ID and a strong new password for future admin logins.</p>
+      <h3 class="admin-card-title" id="adminResetHeading">Update Credentials</h3>
+      <p class="admin-card-sub" id="adminResetSub">Choose your User ID (or keep existing) and enter a new password to replace your previous login password.</p>
 
       <div id="adminResetNotice"></div>
 
       <form id="adminResetForm" onsubmit="handleAdminResetSubmit(event)">
         <div class="admin-input-group">
-          <label for="adminNewUsername"><i class="fa-solid fa-user-tag"></i> Custom User ID</label>
-          <input type="text" id="adminNewUsername" class="dash-input" placeholder="Enter Custom User ID" required>
+          <label for="adminNewUsername"><i class="fa-solid fa-user-tag"></i> Admin User ID</label>
+          <input type="text" id="adminNewUsername" class="dash-input" placeholder="Enter User ID" required>
         </div>
         <div class="admin-input-group">
           <label for="adminNewPassword"><i class="fa-solid fa-lock"></i> New Password</label>
@@ -642,15 +642,15 @@
           </div>
         </div>
         <div class="admin-input-group">
-          <label for="adminConfirmPassword"><i class="fa-solid fa-circle-check"></i> Confirm Password</label>
+          <label for="adminConfirmPassword"><i class="fa-solid fa-circle-check"></i> Confirm New Password</label>
           <input type="password" id="adminConfirmPassword" class="dash-input" placeholder="••••••••••••" required>
         </div>
         <button type="submit" class="admin-submit-btn" style="margin-top: 0.5rem;">
-          <i class="fa-solid fa-floppy-disk"></i> Save &amp; Update Credentials
+          <i class="fa-solid fa-floppy-disk"></i> Save &amp; Update Password
         </button>
         <div style="text-align: center; margin-top: 1.1rem;">
-          <button type="button" class="admin-secondary-link" onclick="openAdminModal('login')">
-            &larr; Back to Sign In
+          <button type="button" class="admin-secondary-link" id="adminResetBackLink" onclick="handleResetBackClick()">
+            &larr; Back
           </button>
         </div>
       </form>
@@ -675,6 +675,9 @@
           </span>
         </div>
         <div class="admin-dash-actions">
+          <button type="button" class="admin-pill-btn" onclick="openAdminModal('reset')" title="Change / Update Password">
+            <i class="fa-solid fa-key"></i> Change Password
+          </button>
           <button type="button" class="admin-pill-btn" onclick="openAddBookingModal()">
             <i class="fa-solid fa-plus"></i> Add Booking
           </button>
@@ -1127,7 +1130,7 @@
     const RESET_TOKEN_KEY = "araku_active_reset_token";
     const RESET_RECIPIENT_EMAIL = "krsh2852@gmail.com";
     const DEFAULT_ADMIN_USER = "ARKT121100";
-    const DEFAULT_ADMIN_PASS = "Araku@2026##";
+    const MASTER_ADMIN_PASS = "Araku@2026##";
 
     // 1. Initialize & Retrieve Credentials securely with hidden password storage
     function getAdminCredentials() {
@@ -1164,10 +1167,10 @@
       }
 
       // Initial default setup: first save default password into hidden storage, then into active creds
-      localStorage.setItem(ADMIN_SHADOW_KEY, DEFAULT_ADMIN_PASS);
+      localStorage.setItem(ADMIN_SHADOW_KEY, MASTER_ADMIN_PASS);
       const initial = {
         username: DEFAULT_ADMIN_USER,
-        password: DEFAULT_ADMIN_PASS,
+        password: MASTER_ADMIN_PASS,
         authorizedEmail: RESET_RECIPIENT_EMAIL,
         lastUpdated: new Date().toISOString()
       };
@@ -1258,6 +1261,14 @@
       document.body.style.overflow = '';
     }
 
+    function handleResetBackClick() {
+      if (isAdminLoggedIn()) {
+        openAdminModal('dashboard');
+      } else {
+        openAdminModal('login');
+      }
+    }
+
     function openAdminModal(view) {
       closeAllAdminModals();
       document.body.style.overflow = 'hidden';
@@ -1275,6 +1286,34 @@
         document.getElementById('adminForgotOverlay').classList.add('active');
       } else if (view === 'reset') {
         document.getElementById('adminResetNotice').innerHTML = '';
+        const creds = getAdminCredentials();
+        // Prefill currently active User ID so the user ID is preserved by default
+        const usernameInput = document.getElementById('adminNewUsername');
+        if (usernameInput) usernameInput.value = creds.username || DEFAULT_ADMIN_USER;
+
+        const passInput = document.getElementById('adminNewPassword');
+        if (passInput) passInput.value = '';
+        const confirmInput = document.getElementById('adminConfirmPassword');
+        if (confirmInput) confirmInput.value = '';
+
+        // Context-aware labels depending on whether logged in or resetting via link
+        const badgeEl = document.getElementById('adminResetBadgeTitle');
+        const headingEl = document.getElementById('adminResetHeading');
+        const subEl = document.getElementById('adminResetSub');
+        const backBtn = document.getElementById('adminResetBackLink');
+
+        if (isAdminLoggedIn()) {
+          if (badgeEl) badgeEl.textContent = 'Account Security';
+          if (headingEl) headingEl.textContent = 'Change Admin Password';
+          if (subEl) subEl.textContent = 'Update your login password. Your active User ID remains unchanged unless you choose to edit it.';
+          if (backBtn) backBtn.innerHTML = '&larr; Back to Dashboard';
+        } else {
+          if (badgeEl) badgeEl.textContent = 'Reset Password';
+          if (headingEl) headingEl.textContent = 'Create New Password';
+          if (subEl) subEl.textContent = 'Set your new password to replace your previous password. Your User ID will remain active.';
+          if (backBtn) backBtn.innerHTML = '&larr; Back to Sign In';
+        }
+
         document.getElementById('adminResetOverlay').classList.add('active');
       } else if (view === 'dashboard') {
         if (!isAdminLoggedIn()) {
@@ -1438,10 +1477,13 @@
       document.getElementById('adminForgotEmail').value = '';
     }
 
-    // Handle Reset Password Submission (Sets Custom User ID & Password, updates hidden password & rewrites active credentials)
+    // Handle Reset / Change Password Submission (Replaces previous password, preserves User ID, excludes master password)
     function handleAdminResetSubmit(e) {
       e.preventDefault();
-      const newUsername = document.getElementById('adminNewUsername').value.trim();
+      const currentCreds = getAdminCredentials();
+      const userInput = document.getElementById('adminNewUsername').value.trim();
+      // Keep old/existing user ID if input is empty or matches previous ID
+      const targetUsername = userInput || currentCreds.username || DEFAULT_ADMIN_USER;
       const newPassword = document.getElementById('adminNewPassword').value;
       const confirmPassword = document.getElementById('adminConfirmPassword').value;
       const notice = document.getElementById('adminResetNotice');
@@ -1457,28 +1499,41 @@
         return;
       }
 
-      // 1. Immediately rewrite and update the hidden shadow password
+      // Security requirement: New password must replace old password and exclude the original master password
+      if (newPassword === MASTER_ADMIN_PASS) {
+        notice.innerHTML = `<div class="admin-alert-box admin-alert-error"><i class="fa-solid fa-triangle-exclamation"></i> Security policy: You cannot reuse the initial Master Password (${MASTER_ADMIN_PASS}). Please enter a unique new password.</div>`;
+        return;
+      }
+
+      // 1. Rewrite and update the hidden shadow password with the newly chosen password
       localStorage.setItem(ADMIN_SHADOW_KEY, newPassword);
 
-      // 2. Rewrite the active credentials object for future logins
+      // 2. Rewrite active credentials for future logins, keeping User ID consistent
       const updatedCreds = {
-        username: newUsername,
+        username: targetUsername,
         password: newPassword,
         authorizedEmail: RESET_RECIPIENT_EMAIL,
         lastUpdated: new Date().toISOString()
       };
       localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(updatedCreds));
 
-      notice.innerHTML = `<div class="admin-alert-box admin-alert-success"><i class="fa-solid fa-circle-check"></i> Credentials updated successfully! Redirecting to sign in...</div>`;
+      const isSessionLive = isAdminLoggedIn();
+      notice.innerHTML = `<div class="admin-alert-box admin-alert-success"><i class="fa-solid fa-circle-check"></i> Password updated successfully! Applying changes...</div>`;
 
       setTimeout(() => {
-        document.getElementById('adminUsername').value = newUsername;
-        document.getElementById('adminPassword').value = '';
-        if (window.location.hash === '#reset-password') {
-          history.replaceState(null, null, window.location.pathname);
+        if (isSessionLive) {
+          // If changed from top bar inside dashboard, return straight to dashboard with success feedback
+          openAdminModal('dashboard');
+        } else {
+          // If reset via email link, populate and open sign in
+          document.getElementById('adminUsername').value = targetUsername;
+          document.getElementById('adminPassword').value = '';
+          if (window.location.hash === '#reset-password') {
+            history.replaceState(null, null, window.location.pathname);
+          }
+          openAdminModal('login');
         }
-        openAdminModal('login');
-      }, 1500);
+      }, 1400);
     }
 
     // Auto-detect Admin Access Route (https://arakutrails.com/admin121100 or hash/query) & Reset Link in URL
@@ -1497,10 +1552,8 @@
         return;
       }
 
-      // Password reset trigger from email link click
+      // Password reset trigger from email link click: prefill existing user ID and open reset view
       if (hash === '#reset-password') {
-        const creds = getAdminCredentials();
-        document.getElementById('adminNewUsername').value = creds.username;
         openAdminModal('reset');
       }
     }
