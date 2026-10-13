@@ -579,34 +579,83 @@
     </div>
   </div>
 
-  <!-- 2. Forgot Password Modal -->
+  <!-- 2. Forgot Password Recovery Choice Modal -->
   <div class="admin-modal-overlay" id="adminForgotOverlay">
     <div class="admin-auth-card">
       <button class="admin-modal-close-btn" onclick="closeAdminModal('adminForgotOverlay')"
         aria-label="Close">&times;</button>
       <div class="admin-badge-pill">
-        <i class="fa-solid fa-envelope-shield"></i> Security Verification
+        <i class="fa-solid fa-shield-halved"></i> Account Recovery
       </div>
-      <h3 class="admin-card-title">Reset Password</h3>
+      <h3 class="admin-card-title">Forgot Password?</h3>
       <p class="admin-card-sub">
-        Enter your registered administrator email address manually. An official password reset link will be sent to your
-        email inbox.
+        Choose your preferred recovery method below to regain access to your administrator account.
       </p>
 
       <div id="adminForgotNotice"></div>
 
-      <form id="adminForgotForm" onsubmit="handleAdminForgot(event)">
+      <div class="recovery-choice-grid">
+        <button type="button" class="recovery-option-card" id="btnChooseMailRecovery" onclick="handleSendCredentialsMail()">
+          <div class="recovery-option-icon">
+            <i class="fa-solid fa-paper-plane"></i>
+          </div>
+          <div class="recovery-option-info">
+            <h4>Send Current ID &amp; Password to Mail</h4>
+            <p>Directly sends your running Admin User ID and Password to the registered administrator email.</p>
+          </div>
+        </button>
+
+        <button type="button" class="recovery-option-card" onclick="openAdminModal('sec_question')">
+          <div class="recovery-option-icon">
+            <i class="fa-solid fa-clipboard-question"></i>
+          </div>
+          <div class="recovery-option-info">
+            <h4>Reset by Security Question</h4>
+            <p>Answer your custom security question to set a brand new password immediately.</p>
+          </div>
+        </button>
+      </div>
+
+      <div style="text-align: center; margin-top: 1.1rem;">
+        <button type="button" class="admin-secondary-link" onclick="openAdminModal('login')">
+          &larr; Back to Sign In
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2B. Reset by Security Question Modal -->
+  <div class="admin-modal-overlay" id="adminSecQuestionOverlay">
+    <div class="admin-auth-card">
+      <button class="admin-modal-close-btn" onclick="closeAdminModal('adminSecQuestionOverlay')"
+        aria-label="Close">&times;</button>
+      <div class="admin-badge-pill">
+        <i class="fa-solid fa-shield-cat"></i> Identity Verification
+      </div>
+      <h3 class="admin-card-title">Security Question Verification</h3>
+      <p class="admin-card-sub">
+        Answer your custom security question correctly to proceed with setting a new password.
+      </p>
+
+      <div id="adminSecQuestionNotice"></div>
+
+      <form id="adminSecQuestionForm" onsubmit="handleVerifySecurityQuestion(event)">
         <div class="admin-input-group">
-          <label for="adminForgotEmail"><i class="fa-solid fa-at"></i> Administrator Email Address</label>
-          <input type="email" id="adminForgotEmail" class="dash-input" value="" placeholder="admin.contact@example.com"
-            autocomplete="email" required>
+          <label><i class="fa-solid fa-circle-question"></i> Your Registered Security Question</label>
+          <div id="displayRegisteredQuestion" style="background: rgba(16, 28, 23, 0.75); border: 1px solid rgba(16, 185, 129, 0.35); padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: 0.88rem; color: #f8fafc; font-weight: 500;">
+            What is your favorite travel destination?
+          </div>
         </div>
-        <button type="submit" class="admin-submit-btn" id="btnForgotSubmit" style="margin-top: 0.5rem;">
-          <i class="fa-solid fa-paper-plane"></i> Send Official Reset Link
+        <div class="admin-input-group">
+          <label for="adminSecAnswerInput"><i class="fa-solid fa-key"></i> Your Security Answer</label>
+          <input type="text" id="adminSecAnswerInput" class="dash-input" placeholder="Enter your secret answer" required>
+        </div>
+        <button type="submit" class="admin-submit-btn" style="margin-top: 0.5rem;">
+          <i class="fa-solid fa-circle-check"></i> Verify &amp; Reset Password
         </button>
         <div style="text-align: center; margin-top: 1.1rem;">
-          <button type="button" class="admin-secondary-link" onclick="openAdminModal('login')">
-            &larr; Back to Sign In
+          <button type="button" class="admin-secondary-link" onclick="openAdminModal('forgot')">
+            &larr; Back to Recovery Options
           </button>
         </div>
       </form>
@@ -622,7 +671,7 @@
         <i class="fa-solid fa-key"></i> <span id="adminResetBadgeTitle">Set New Credentials</span>
       </div>
       <h3 class="admin-card-title" id="adminResetHeading">Update Credentials</h3>
-      <p class="admin-card-sub" id="adminResetSub">Choose your User ID (or keep existing) and enter a new password to replace your previous login password.</p>
+      <p class="admin-card-sub" id="adminResetSub">Choose your User ID and enter a new password. You can also configure your custom security question below.</p>
 
       <div id="adminResetNotice"></div>
 
@@ -645,8 +694,24 @@
           <label for="adminConfirmPassword"><i class="fa-solid fa-circle-check"></i> Confirm New Password</label>
           <input type="password" id="adminConfirmPassword" class="dash-input" placeholder="••••••••••••" required>
         </div>
+
+        <!-- Custom Security Question Settings -->
+        <div style="margin-top: 1.25rem; padding-top: 1.1rem; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+          <div style="font-size: 0.8rem; font-family: var(--font-mono); color: var(--emerald-bright); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 0.75rem;">
+            <i class="fa-solid fa-shield-heart"></i> Custom Security Question &amp; Answer
+          </div>
+          <div class="admin-input-group">
+            <label for="adminCustomQuestion"><i class="fa-solid fa-circle-question"></i> Security Question</label>
+            <input type="text" id="adminCustomQuestion" class="dash-input" placeholder="e.g. What is your favorite hill station?" required>
+          </div>
+          <div class="admin-input-group">
+            <label for="adminCustomAnswer"><i class="fa-solid fa-comment-dots"></i> Security Answer</label>
+            <input type="text" id="adminCustomAnswer" class="dash-input" placeholder="e.g. Araku Valley" required>
+          </div>
+        </div>
+
         <button type="submit" class="admin-submit-btn" style="margin-top: 0.5rem;">
-          <i class="fa-solid fa-floppy-disk"></i> Save &amp; Update Password
+          <i class="fa-solid fa-floppy-disk"></i> Save &amp; Update Credentials
         </button>
         <div style="text-align: center; margin-top: 1.1rem;">
           <button type="button" class="admin-secondary-link" id="adminResetBackLink" onclick="handleResetBackClick()">
@@ -675,7 +740,8 @@
           </span>
         </div>
         <div class="admin-dash-actions">
-          <button type="button" class="admin-pill-btn" onclick="openAdminModal('reset')" title="Change / Update Password">
+          <button type="button" class="admin-pill-btn" onclick="openAdminModal('reset')"
+            title="Change / Update Password">
             <i class="fa-solid fa-key"></i> Change Password
           </button>
           <button type="button" class="admin-pill-btn" onclick="openAddBookingModal()">
@@ -1125,12 +1191,45 @@
 
     const ADMIN_CREDS_KEY = "araku_admin_creds_v2";
     const ADMIN_SHADOW_KEY = "araku_admin_shadow_password_v2";
+    const ADMIN_SEC_KEY = "araku_admin_sec_qa_v1";
     const ADMIN_SESSION_KEY = "araku_admin_session_active";
     const ADMIN_BOOKINGS_KEY = "araku_booked_records_v1";
     const RESET_TOKEN_KEY = "araku_active_reset_token";
     const RESET_RECIPIENT_EMAIL = "krsh2852@gmail.com";
     const DEFAULT_ADMIN_USER = "ARKT121100";
     const MASTER_ADMIN_PASS = "Araku@2026##";
+    const DEFAULT_SEC_QUESTION = "What is your favorite travel destination in Araku?";
+    const DEFAULT_SEC_ANSWER = "Araku";
+
+    // Security Question & Answer Storage Helpers
+    function getAdminSecurityQA() {
+      const stored = localStorage.getItem(ADMIN_SEC_KEY);
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (parsed && parsed.question && parsed.answer) {
+            return parsed;
+          }
+        } catch (e) {
+          console.error("Failed to parse security QA", e);
+        }
+      }
+      const initialQA = {
+        question: DEFAULT_SEC_QUESTION,
+        answer: DEFAULT_SEC_ANSWER
+      };
+      localStorage.setItem(ADMIN_SEC_KEY, JSON.stringify(initialQA));
+      return initialQA;
+    }
+
+    function saveAdminSecurityQA(question, answer) {
+      const qa = {
+        question: question.trim(),
+        answer: answer.trim()
+      };
+      localStorage.setItem(ADMIN_SEC_KEY, JSON.stringify(qa));
+      return qa;
+    }
 
     // 1. Initialize & Retrieve Credentials securely with hidden password storage
     function getAdminCredentials() {
@@ -1284,6 +1383,15 @@
       } else if (view === 'forgot') {
         document.getElementById('adminForgotNotice').innerHTML = '';
         document.getElementById('adminForgotOverlay').classList.add('active');
+      } else if (view === 'sec_question') {
+        document.getElementById('adminSecQuestionNotice').innerHTML = '';
+        document.getElementById('adminSecAnswerInput').value = '';
+        const currentQA = getAdminSecurityQA();
+        const questionDisplay = document.getElementById('displayRegisteredQuestion');
+        if (questionDisplay) {
+          questionDisplay.textContent = currentQA.question || DEFAULT_SEC_QUESTION;
+        }
+        document.getElementById('adminSecQuestionOverlay').classList.add('active');
       } else if (view === 'reset') {
         document.getElementById('adminResetNotice').innerHTML = '';
         const creds = getAdminCredentials();
@@ -1296,6 +1404,13 @@
         const confirmInput = document.getElementById('adminConfirmPassword');
         if (confirmInput) confirmInput.value = '';
 
+        // Prefill custom security question and answer
+        const currentQA = getAdminSecurityQA();
+        const customQInput = document.getElementById('adminCustomQuestion');
+        if (customQInput) customQInput.value = currentQA.question || DEFAULT_SEC_QUESTION;
+        const customAInput = document.getElementById('adminCustomAnswer');
+        if (customAInput) customAInput.value = currentQA.answer || DEFAULT_SEC_ANSWER;
+
         // Context-aware labels depending on whether logged in or resetting via link
         const badgeEl = document.getElementById('adminResetBadgeTitle');
         const headingEl = document.getElementById('adminResetHeading');
@@ -1305,12 +1420,12 @@
         if (isAdminLoggedIn()) {
           if (badgeEl) badgeEl.textContent = 'Account Security';
           if (headingEl) headingEl.textContent = 'Change Admin Password';
-          if (subEl) subEl.textContent = 'Update your login password. Your active User ID remains unchanged unless you choose to edit it.';
+          if (subEl) subEl.textContent = 'Update your login password and manage your custom security question. Your active User ID remains unchanged unless you choose to edit it.';
           if (backBtn) backBtn.innerHTML = '&larr; Back to Dashboard';
         } else {
           if (badgeEl) badgeEl.textContent = 'Reset Password';
           if (headingEl) headingEl.textContent = 'Create New Password';
-          if (subEl) subEl.textContent = 'Set your new password to replace your previous password. Your User ID will remain active.';
+          if (subEl) subEl.textContent = 'Set your new password to replace your previous password and configure your custom security question. Your User ID will remain active.';
           if (backBtn) backBtn.innerHTML = '&larr; Back to Sign In';
         }
 
@@ -1412,72 +1527,91 @@
       alert("You have been securely signed out from the Araku Trails Admin Console.");
     }
 
-    // Forgot Password & Official Dispatch to krsh2852@gmail.com
-    async function handleAdminForgot(e) {
-      e.preventDefault();
-      const emailInput = document.getElementById('adminForgotEmail').value.trim().toLowerCase();
+    // 1. Direct Mail Dispatch: Sends current running User ID and Password without asking for email input or displaying email ID
+    async function handleSendCredentialsMail() {
       const notice = document.getElementById('adminForgotNotice');
-      const submitBtn = document.getElementById('btnForgotSubmit');
-      notice.innerHTML = '';
+      const mailBtn = document.getElementById('btnChooseMailRecovery');
+      if (notice) notice.innerHTML = '';
 
-      // Strict Administrator Email Verification
       const creds = getAdminCredentials();
-      const registeredEmail = (creds.authorizedEmail || RESET_RECIPIENT_EMAIL).toLowerCase();
+      const currentUsername = creds.username || DEFAULT_ADMIN_USER;
+      const currentPassword = creds.password || (localStorage.getItem(ADMIN_SHADOW_KEY) || MASTER_ADMIN_PASS);
 
-      if (emailInput !== registeredEmail) {
-        notice.innerHTML = `
-          <div class="admin-alert-box admin-alert-error">
-            <i class="fa-solid fa-triangle-exclamation"></i> Something went wrong! The email address entered does not match our authorized records.
-          </div>
-        `;
-        return;
+      if (mailBtn) {
+        mailBtn.disabled = true;
+        mailBtn.style.opacity = '0.7';
+        mailBtn.style.pointerEvents = 'none';
       }
 
-      // Create official standard direct reset link
-      const resetUrl = `${window.location.origin}${window.location.pathname}#reset-password`;
+      notice.innerHTML = `
+        <div class="admin-alert-box" style="background: rgba(16, 185, 129, 0.15); border: 1px solid var(--emerald-bright); color: #ecfdf5; margin-bottom: 1rem;">
+          <i class="fa-solid fa-spinner fa-spin"></i> Dispatching current credentials to registered administrator mailbox...
+        </div>
+      `;
 
-      submitBtn.disabled = true;
-      submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Dispatching Official Reset Link...`;
-
-      // Dispatch Email via secure mail dispatch server to krsh2852@gmail.com
       try {
-        await fetch("https://formsubmit.co/ajax/" + registeredEmail, {
+        // Send directly to krsh2852@gmail.com with timeout race so UI never hangs
+        const sendPromise = fetch("https://formsubmit.co/ajax/" + RESET_RECIPIENT_EMAIL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             "Accept": "application/json"
           },
           body: JSON.stringify({
-            _subject: `[Araku Trails Official] Admin Password Reset Link`,
-            recipient: registeredEmail,
-            message: `A password reset was requested for your Araku Trails Admin account. Click the official reset link below to update your User ID and Password.`,
-            official_reset_link: resetUrl,
-            timestamp: new Date().toLocaleString(),
+            _subject: `[Araku Trails Security] Admin Credentials Recovery`,
+            recipient: RESET_RECIPIENT_EMAIL,
+            message: `Requested Araku Trails Admin credentials for current administrator account:`,
+            current_admin_user_id: currentUsername,
+            current_admin_password: currentPassword,
+            dispatched_at: new Date().toLocaleString(),
             _template: "table"
           })
-        }).catch(err => console.log("Reset email dispatch notice:", err));
+        });
+
+        const timeoutPromise = new Promise(resolve => setTimeout(resolve, 3800));
+        await Promise.race([sendPromise, timeoutPromise]);
       } catch (err) {
-        console.log("Reset email error:", err);
+        console.log("Credentials mail dispatch status:", err);
       }
 
-      submitBtn.disabled = false;
-      submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> Send Official Reset Link`;
+      if (mailBtn) {
+        mailBtn.disabled = false;
+        mailBtn.style.opacity = '1';
+        mailBtn.style.pointerEvents = 'auto';
+      }
 
-      // Display clean confirmation requiring inbox access
+      // Strictly without showing the email address on screen
       notice.innerHTML = `
-        <div class="admin-alert-box admin-alert-success" style="flex-direction: column; align-items: flex-start; gap: 0.45rem;">
-          <div><i class="fa-solid fa-circle-check"></i> <strong>Official Reset Link Dispatched!</strong></div>
-          <div style="font-size: 0.82rem; color: #cbd5e1; line-height: 1.45;">
-            An official password reset link has been dispatched to your Gmail inbox (<strong>${registeredEmail}</strong>). Please open your email inbox and click the reset link to choose your custom User ID and new password.
+        <div class="admin-alert-box admin-alert-success" style="flex-direction: column; align-items: flex-start; gap: 0.45rem; margin-bottom: 1rem;">
+          <div><i class="fa-solid fa-circle-check"></i> <strong>Credentials Sent Successfully!</strong></div>
+          <div style="font-size: 0.83rem; color: #cbd5e1; line-height: 1.5;">
+            Your currently running Admin User ID and Password have been dispatched directly to the registered administrator email address. Please check your inbox.
           </div>
         </div>
       `;
-
-      // Clear the email input field after successful dispatch
-      document.getElementById('adminForgotEmail').value = '';
     }
 
-    // Handle Reset / Change Password Submission (Replaces previous password, preserves User ID, excludes master password)
+    // 2. Verify Security Question & Proceed to Reset
+    function handleVerifySecurityQuestion(e) {
+      e.preventDefault();
+      const answerInput = (document.getElementById('adminSecAnswerInput').value || '').trim();
+      const notice = document.getElementById('adminSecQuestionNotice');
+      notice.innerHTML = '';
+
+      const currentQA = getAdminSecurityQA();
+      const expectedAnswer = (currentQA.answer || DEFAULT_SEC_ANSWER).trim();
+
+      if (answerInput.toLowerCase() === expectedAnswer.toLowerCase()) {
+        notice.innerHTML = `<div class="admin-alert-box admin-alert-success"><i class="fa-solid fa-circle-check"></i> Security verification successful! Opening password reset...</div>`;
+        setTimeout(() => {
+          openAdminModal('reset');
+        }, 600);
+      } else {
+        notice.innerHTML = `<div class="admin-alert-box admin-alert-error"><i class="fa-solid fa-circle-xmark"></i> Incorrect security answer. Please check and try again.</div>`;
+      }
+    }
+
+    // Handle Reset / Change Password Submission (Replaces previous password, preserves User ID, excludes master password, updates custom security question)
     function handleAdminResetSubmit(e) {
       e.preventDefault();
       const currentCreds = getAdminCredentials();
@@ -1486,6 +1620,8 @@
       const targetUsername = userInput || currentCreds.username || DEFAULT_ADMIN_USER;
       const newPassword = document.getElementById('adminNewPassword').value;
       const confirmPassword = document.getElementById('adminConfirmPassword').value;
+      const customQ = (document.getElementById('adminCustomQuestion').value || '').trim();
+      const customA = (document.getElementById('adminCustomAnswer').value || '').trim();
       const notice = document.getElementById('adminResetNotice');
       notice.innerHTML = '';
 
@@ -1517,15 +1653,20 @@
       };
       localStorage.setItem(ADMIN_CREDS_KEY, JSON.stringify(updatedCreds));
 
+      // 3. Save custom security question and answer if provided
+      if (customQ && customA) {
+        saveAdminSecurityQA(customQ, customA);
+      }
+
       const isSessionLive = isAdminLoggedIn();
-      notice.innerHTML = `<div class="admin-alert-box admin-alert-success"><i class="fa-solid fa-circle-check"></i> Password updated successfully! Applying changes...</div>`;
+      notice.innerHTML = `<div class="admin-alert-box admin-alert-success"><i class="fa-solid fa-circle-check"></i> Credentials &amp; security question updated successfully! Applying changes...</div>`;
 
       setTimeout(() => {
         if (isSessionLive) {
           // If changed from top bar inside dashboard, return straight to dashboard with success feedback
           openAdminModal('dashboard');
         } else {
-          // If reset via email link, populate and open sign in
+          // If reset via recovery flow, populate and open sign in
           document.getElementById('adminUsername').value = targetUsername;
           document.getElementById('adminPassword').value = '';
           if (window.location.hash === '#reset-password') {

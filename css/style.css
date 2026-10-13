@@ -2826,3 +2826,61 @@ body {
   }
 }
 
+/* Recovery Option Cards & Security Questions UI */
+.recovery-choice-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.85rem;
+  margin: 1.25rem 0;
+}
+
+.recovery-option-card {
+  background: rgba(16, 28, 23, 0.65);
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  border-radius: var(--radius-md);
+  padding: 1.1rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: left;
+  color: #f8fafc;
+  width: 100%;
+}
+
+.recovery-option-card:hover {
+  background: rgba(16, 185, 129, 0.16);
+  border-color: var(--emerald-bright);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.recovery-option-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  color: var(--emerald-bright);
+  flex-shrink: 0;
+}
+
+.recovery-option-info h4 {
+  font-family: var(--font-brand);
+  font-size: 1.02rem;
+  color: #f8fafc;
+  margin-bottom: 0.25rem;
+}
+
+.recovery-option-info p {
+  font-size: 0.8rem;
+  color: #94a3b8;
+  line-height: 1.4;
+  margin: 0;
+}
+
