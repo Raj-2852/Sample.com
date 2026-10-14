@@ -540,11 +540,17 @@
   <!-- 1. Admin Login Modal -->
   <div class="admin-modal-overlay" id="adminLoginOverlay">
     <div class="admin-auth-card">
-      <button class="admin-modal-close-btn" onclick="closeAdminModal('adminLoginOverlay')"
-        aria-label="Close">&times;</button>
-      <div class="admin-badge-pill">
-        <i class="fa-solid fa-lock"></i> Protected Console
+      <!-- Separate Top Action Bar with Prominent Close Button -->
+      <div class="admin-auth-top-bar">
+        <div class="admin-badge-pill" style="margin-bottom: 0;">
+          <i class="fa-solid fa-lock"></i> Protected Console
+        </div>
+        <button type="button" class="admin-separate-close-btn" onclick="closeAdminModal('adminLoginOverlay')"
+          aria-label="Close Admin Console">
+          <i class="fa-solid fa-xmark"></i> <span>Close</span>
+        </button>
       </div>
+
       <h3 class="admin-card-title">Admin Sign In</h3>
       <p class="admin-card-sub">Access Araku Trails reservation dispatch and customer records securely.</p>
 
@@ -570,9 +576,12 @@
         <button type="submit" class="admin-submit-btn" style="margin-top: 0.5rem;">
           <i class="fa-solid fa-arrow-right-to-bracket"></i> Sign In to Console
         </button>
-        <div style="text-align: center; margin-top: 1.1rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1.15rem; flex-wrap: wrap; gap: 0.75rem;">
           <button type="button" class="admin-secondary-link" onclick="openAdminModal('forgot')">
             Forgot Password?
+          </button>
+          <button type="button" class="admin-exit-btn" onclick="closeAdminModal('adminLoginOverlay')">
+            <i class="fa-solid fa-xmark"></i> Close Console
           </button>
         </div>
       </form>
@@ -582,10 +591,14 @@
   <!-- 2. Forgot Password Recovery Choice Modal -->
   <div class="admin-modal-overlay" id="adminForgotOverlay">
     <div class="admin-auth-card">
-      <button class="admin-modal-close-btn" onclick="closeAdminModal('adminForgotOverlay')"
-        aria-label="Close">&times;</button>
-      <div class="admin-badge-pill">
-        <i class="fa-solid fa-shield-halved"></i> Account Recovery
+      <div class="admin-auth-top-bar">
+        <div class="admin-badge-pill" style="margin-bottom: 0;">
+          <i class="fa-solid fa-shield-halved"></i> Account Recovery
+        </div>
+        <button type="button" class="admin-separate-close-btn" onclick="closeAdminModal('adminForgotOverlay')"
+          aria-label="Close Admin Recovery">
+          <i class="fa-solid fa-xmark"></i> <span>Close</span>
+        </button>
       </div>
       <h3 class="admin-card-title">Forgot Password?</h3>
       <p class="admin-card-sub">
@@ -616,9 +629,12 @@
         </button>
       </div>
 
-      <div style="text-align: center; margin-top: 1.1rem;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 1.15rem; flex-wrap: wrap; gap: 0.75rem;">
         <button type="button" class="admin-secondary-link" onclick="openAdminModal('login')">
           &larr; Back to Sign In
+        </button>
+        <button type="button" class="admin-exit-btn" onclick="closeAdminModal('adminForgotOverlay')">
+          <i class="fa-solid fa-xmark"></i> Close Console
         </button>
       </div>
     </div>
@@ -627,10 +643,14 @@
   <!-- 2B. Reset by Security Question Modal -->
   <div class="admin-modal-overlay" id="adminSecQuestionOverlay">
     <div class="admin-auth-card">
-      <button class="admin-modal-close-btn" onclick="closeAdminModal('adminSecQuestionOverlay')"
-        aria-label="Close">&times;</button>
-      <div class="admin-badge-pill">
-        <i class="fa-solid fa-shield-cat"></i> Identity Verification
+      <div class="admin-auth-top-bar">
+        <div class="admin-badge-pill" style="margin-bottom: 0;">
+          <i class="fa-solid fa-shield-cat"></i> Identity Verification
+        </div>
+        <button type="button" class="admin-separate-close-btn" onclick="closeAdminModal('adminSecQuestionOverlay')"
+          aria-label="Close Security Verification">
+          <i class="fa-solid fa-xmark"></i> <span>Close</span>
+        </button>
       </div>
       <h3 class="admin-card-title">Security Question Verification</h3>
       <p class="admin-card-sub">
@@ -665,10 +685,14 @@
   <!-- 3. Password Reset / Change Password Form Modal -->
   <div class="admin-modal-overlay" id="adminResetOverlay">
     <div class="admin-auth-card">
-      <button class="admin-modal-close-btn" onclick="closeAdminModal('adminResetOverlay')"
-        aria-label="Close">&times;</button>
-      <div class="admin-badge-pill">
-        <i class="fa-solid fa-key"></i> <span id="adminResetBadgeTitle">Set New Credentials</span>
+      <div class="admin-auth-top-bar">
+        <div class="admin-badge-pill" style="margin-bottom: 0;">
+          <i class="fa-solid fa-key"></i> <span id="adminResetBadgeTitle">Set New Credentials</span>
+        </div>
+        <button type="button" class="admin-separate-close-btn" onclick="closeAdminModal('adminResetOverlay')"
+          aria-label="Close Credentials Modal">
+          <i class="fa-solid fa-xmark"></i> <span>Close</span>
+        </button>
       </div>
       <h3 class="admin-card-title" id="adminResetHeading">Update Credentials</h3>
       <p class="admin-card-sub" id="adminResetSub">Choose your User ID and enter a new password. You can also configure your custom security question below.</p>

@@ -803,21 +803,95 @@ body {
 
 @media (max-width: 1024px) {
   .pekoe-header {
-    padding: 1rem 1.25rem;
-    background: linear-gradient(180deg, rgba(7, 13, 10, 0.9) 0%, rgba(7, 13, 10, 0.5) 75%, transparent 100%);
+    padding: 0.65rem 0.65rem;
+    background: linear-gradient(180deg, rgba(7, 13, 10, 0.98) 0%, rgba(7, 13, 10, 0.88) 90%, transparent 100%);
+    width: 100%;
+    box-sizing: border-box;
   }
 
   .pekoe-header.scrolled {
-    padding: 0.75rem 1.25rem;
-    background: rgba(7, 13, 10, 0.95);
+    padding: 0.5rem 0.65rem;
+    background: rgba(7, 13, 10, 0.98);
   }
 
+  .pekoe-header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .pekoe-brand {
+    gap: 0.45rem;
+  }
+
+  .pekoe-logo-img {
+    width: 34px;
+    height: 34px;
+  }
+
+  .pekoe-brand-text {
+    font-size: 1.05rem;
+  }
+
+  /* All top navigation menu options displayed simultaneously without box-style, scrolling or swiping */
   .pekoe-header-right {
-    display: none;
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    overflow: visible;
   }
 
+  .pekoe-nav-pill {
+    display: flex !important;
+    align-items: center;
+    justify-content: flex-end;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding: 0;
+    margin: 0;
+    gap: 0.45rem;
+    overflow: visible;
+    flex-wrap: wrap;
+  }
+
+  .pekoe-nav-links {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .pekoe-nav-links a {
+    font-size: clamp(0.68rem, 2.2vw, 0.82rem);
+    font-weight: 600;
+    color: #e2e8f0;
+    padding: 0.15rem 0.2rem;
+    white-space: nowrap;
+  }
+
+  .pekoe-nav-cta {
+    padding: 0.32rem 0.65rem;
+    font-size: clamp(0.68rem, 2.1vw, 0.78rem);
+    margin-left: 0.25rem;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Strictly hide the 3 lines hamburger menu button on all mobile zoom levels */
   .pekoe-mobile-menu-btn {
-    display: inline-flex;
+    display: none !important;
   }
 
   .pekoe-hero {
@@ -853,7 +927,7 @@ body {
 
 @media (max-width: 768px) {
   .pekoe-header {
-    padding: 0.85rem 1rem 1.25rem;
+    padding: 0.75rem 0.75rem;
   }
 
   .pekoe-hero {
@@ -2165,18 +2239,20 @@ body {
   font-weight: 700 !important;
 }
 
-/* Admin Modal Overlay & Sizing */
+/* Admin Modal Overlay & Sizing (Full scrollable page-like architecture) */
 .admin-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(3, 8, 6, 0.88);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: rgba(4, 9, 7, 0.96);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   z-index: 99999;
   display: none;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  padding: 1rem;
+  padding: 3rem 1.25rem 4rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   opacity: 0;
   transition: opacity 0.25s ease;
 }
@@ -2186,31 +2262,37 @@ body {
   opacity: 1;
 }
 
+/* Page-like full natural container for login, forgot password & security modals */
 .admin-auth-card {
   width: 100%;
-  max-width: 440px;
-  background: linear-gradient(145deg, #0e1a14 0%, #070d0a 100%);
-  border: 1px solid rgba(16, 185, 129, 0.35);
-  border-radius: 20px;
-  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(16, 185, 129, 0.12);
+  max-width: 640px;
+  background: radial-gradient(circle at top left, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+              linear-gradient(165deg, rgba(13, 25, 20, 0.95) 0%, rgba(6, 12, 9, 0.98) 100%);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 28px;
+  box-shadow: 0 35px 90px rgba(0, 0, 0, 0.85), 0 0 50px rgba(16, 185, 129, 0.1);
   position: relative;
-  overflow: hidden;
-  padding: 2.2rem 2rem;
+  overflow: visible;
+  padding: 3.5rem 3rem 3.2rem;
+  margin: 1.5rem auto 3.5rem;
   animation: adminZoomIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .admin-dashboard-card {
-  width: 96%;
-  max-width: 1200px;
-  max-height: 90vh;
+  width: 98%;
+  max-width: 1320px;
+  min-height: 85vh;
+  max-height: 94vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(160deg, #0d1813 0%, #070c09 100%);
-  border: 1px solid rgba(16, 185, 129, 0.4);
-  border-radius: 22px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 40px rgba(16, 185, 129, 0.15);
+  background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.08) 0%, transparent 60%),
+              linear-gradient(160deg, #0d1813 0%, #070c09 100%);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  border-radius: 24px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85), 0 0 45px rgba(16, 185, 129, 0.15);
   position: relative;
   overflow: hidden;
+  margin: 1rem auto;
   animation: adminZoomIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -2223,6 +2305,62 @@ body {
     transform: scale(1) translateY(0);
     opacity: 1;
   }
+}
+
+/* Dedicated Action Top Bar and Separate Close Button */
+.admin-auth-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.admin-separate-close-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+  padding: 0.42rem 0.95rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-brand);
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.admin-separate-close-btn:hover {
+  background: rgba(239, 68, 68, 0.28);
+  border-color: #ef4444;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(239, 68, 68, 0.4);
+}
+
+.admin-exit-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-pill);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.admin-exit-btn:hover {
+  background: rgba(239, 68, 68, 0.18);
+  border-color: #ef4444;
+  color: #fca5a5;
 }
 
 .admin-modal-close-btn {
@@ -2722,107 +2860,168 @@ body {
 /* Perfect Responsive Alignments (Mobile & Desktop) */
 @media (max-width: 768px) {
   .admin-modal-overlay {
-    padding: 0.75rem;
-    align-items: flex-end;
+    padding: 1rem 0.5rem 3rem;
+    align-items: flex-start;
+    justify-content: center;
   }
 
+  /* Free, non-sticky, completely natural page-like layout on mobile */
   .admin-auth-card {
     max-width: 100%;
-    border-radius: 20px 20px 0 0;
-    padding: 1.8rem 1.25rem 2rem;
-    max-height: 92vh;
-    overflow-y: auto;
+    border-radius: 20px;
+    padding: 2.2rem 1.25rem 2.2rem;
+    margin: 0.5rem auto 3rem;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85), 0 0 30px rgba(16, 185, 129, 0.15);
   }
 
   .admin-dashboard-card {
     width: 100%;
     max-width: 100%;
-    height: 95vh;
-    max-height: 95vh;
-    border-radius: 18px 18px 0 0;
+    height: auto;
+    min-height: 90vh;
+    max-height: none; /* Non-boxy, free scrollable layout */
+    border-radius: 18px;
+    margin: 0.5rem auto 3rem;
+    overflow: visible;
   }
 
+  /* Main Dashboard Menu Options: exactly same layout & ratio as Desktop Mode */
   .admin-dash-head {
-    padding: 1rem 1.15rem;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
+  }
+
+  .admin-dash-head-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+
+  .admin-dash-title {
+    font-size: clamp(0.85rem, 3.2vw, 1rem);
+    white-space: nowrap;
   }
 
   .admin-dash-actions {
-    width: 100%;
-    justify-content: space-between;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 2px;
+  }
+
+  .admin-pill-btn {
+    padding: 0.38rem 0.65rem;
+    font-size: clamp(0.68rem, 2.5vw, 0.76rem);
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .admin-metrics-ribbon {
-    grid-template-columns: 1fr 1fr;
-    gap: 0.65rem;
-    padding: 0.85rem 1.15rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
+  .admin-stat-card {
+    min-width: 110px;
+    padding: 0.65rem 0.8rem;
+  }
+
+  .admin-stat-label {
+    font-size: 0.68rem;
+  }
+
+  .admin-stat-val {
+    font-size: 1.15rem;
+  }
+
+  /* Filter and search controls bar matching desktop ratio */
   .admin-controls-bar {
-    padding: 0.85rem 1.15rem;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    flex-wrap: nowrap;
   }
 
   .admin-search-wrap {
-    max-width: 100%;
-    min-width: 100%;
+    flex: 1 1 auto;
+    min-width: 140px;
   }
 
   .admin-filter-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    gap: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    flex-shrink: 0;
   }
 
   .admin-filter-select {
-    width: 100%;
+    padding: 0.42rem 0.65rem;
+    font-size: clamp(0.68rem, 2.5vw, 0.76rem);
   }
 
   .admin-table-container {
-    padding: 0 0.75rem 1rem;
+    padding: 0 0.75rem 1.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* Booking Modal Mobile Alignment */
+  .admin-table {
+    min-width: 800px; /* Full desktop-mode table data ratio on mobile */
+  }
+
+  /* Customer Booking Modal Alignment */
   .modal {
-    padding: 0.75rem;
-    align-items: flex-end;
+    padding: 1.5rem 0.75rem 2.5rem;
+    align-items: flex-start;
+    justify-content: center;
+    overflow-y: auto;
   }
 
   .modal-box {
     max-width: 100%;
-    border-radius: 22px 22px 0 0;
-    padding: 2rem 1.25rem 1.75rem;
-    max-height: 92vh;
-    overflow-y: auto;
+    border-radius: 20px;
+    padding: 2.2rem 1.35rem 2rem;
+    margin: 1rem auto;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.85);
   }
 }
 
 @media (min-width: 769px) {
   .admin-modal-overlay {
-    padding: 2rem;
-    align-items: center;
+    padding: 3rem 1.5rem 4rem;
+    align-items: flex-start;
+    justify-content: center;
   }
 
   .admin-auth-card {
-    max-width: 440px;
-    margin: 0 auto;
+    max-width: 520px;
+    margin: 2rem auto 3rem;
   }
 
   .admin-dashboard-card {
-    width: 95%;
-    max-width: 1240px;
-    height: 88vh;
-    margin: 0 auto;
+    width: 96%;
+    max-width: 1300px;
+    height: 90vh;
+    margin: 1.5rem auto;
   }
 
   .modal-box {
-    max-width: 500px;
-    margin: 0 auto;
+    max-width: 520px;
+    margin: 2rem auto;
   }
 }
 
