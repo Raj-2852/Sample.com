@@ -2590,6 +2590,19 @@ body {
   color: #fca5a5;
 }
 
+.admin-pill-btn.close-dash-btn {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.35);
+  color: #fca5a5;
+}
+
+.admin-pill-btn.close-dash-btn:hover {
+  background: rgba(239, 68, 68, 0.28);
+  border-color: #ef4444;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.35);
+}
+
 /* Dashboard Metrics Ribbon */
 .admin-metrics-ribbon {
   display: grid;
