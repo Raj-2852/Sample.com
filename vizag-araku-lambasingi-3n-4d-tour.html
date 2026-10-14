@@ -312,6 +312,36 @@
         `*Package / Tour:* ${packageChoice}\n\n` +
         `Submitted via arakutrails.com`;
 
+      // Broadcast to Admin Dashboard multi-device real-time sync & local storage
+      const bookingRecord = {
+        id: "ARK-B" + String(Date.now()).slice(-4),
+        name: name,
+        phone: mobile,
+        date: date,
+        package: packageChoice,
+        channel: "Web Form",
+        status: "New",
+        notes: `Application received via tour page for ${packageChoice}`,
+        timestamp: new Date().toISOString()
+      };
+      try {
+        const stored = localStorage.getItem("araku_booked_records_v1");
+        const list = stored ? JSON.parse(stored) : [];
+        list.unshift(bookingRecord);
+        localStorage.setItem("araku_booked_records_v1", JSON.stringify(list));
+      } catch (_) {}
+      try {
+        fetch("https://ntfy.sh/arakutrails_secure_dispatch_sync_v2852", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Title": "Araku New Booking Sync",
+            "Priority": "high"
+          },
+          body: JSON.stringify(bookingRecord)
+        }).catch(e => console.log("Sync dispatch notice:", e));
+      } catch (_) {}
+
       try {
         fetch("https://formsubmit.co/ajax/" + emailRecipient, {
           method: "POST",

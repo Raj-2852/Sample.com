@@ -1220,6 +1220,7 @@
     const ADMIN_SEC_KEY = "araku_admin_sec_qa_v1";
     const ADMIN_SESSION_KEY = "araku_admin_session_active";
     const ADMIN_BOOKINGS_KEY = "araku_booked_records_v1";
+    const ARAKU_SYNC_TOPIC = "arakutrails_secure_dispatch_sync_v2852";
     const RESET_TOKEN_KEY = "araku_active_reset_token";
     const RESET_RECIPIENT_EMAIL = "krsh2852@gmail.com";
     const DEFAULT_ADMIN_USER = "ARKT121100";
@@ -1352,11 +1353,34 @@
       return initialSeeds;
     }
 
-    function saveCustomerBookingRecord(record) {
+    function broadcastBookingToCloudSync(record) {
+      try {
+        fetch("https://ntfy.sh/" + ARAKU_SYNC_TOPIC, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Title": "Araku New Booking Sync",
+            "Priority": "high"
+          },
+          body: JSON.stringify(record)
+        }).catch(e => console.log("Cloud sync dispatch notice:", e));
+      } catch (e) {
+        console.log("Cloud sync notice:", e);
+      }
+    }
+
+    function saveCustomerBookingRecord(record, shouldBroadcast = true) {
       const bookings = getStoredBookings();
-      const newId = "ARK-B" + String(Date.now()).slice(-4);
+      const newId = record.id || ("ARK-B" + String(Date.now()).slice(-4));
+
+      // Avoid duplicate insertion if already recorded
+      const existingIdx = bookings.findIndex(b => b.id === newId || (b.name === record.name && b.phone === record.phone && b.date === record.date && b.package === record.package));
+      if (existingIdx !== -1) {
+        return bookings[existingIdx];
+      }
+
       const newEntry = {
-        id: record.id || newId,
+        id: newId,
         name: record.name,
         phone: record.phone,
         date: record.date,
@@ -1364,12 +1388,99 @@
         channel: record.channel || "Web Form",
         status: record.status || "New",
         notes: record.notes || "Dispatched via customer inquiry",
-        timestamp: new Date().toISOString()
+        timestamp: record.timestamp || new Date().toISOString()
       };
       // Immediately append newly submitted customer details to the top of the list
       bookings.unshift(newEntry);
       localStorage.setItem(ADMIN_BOOKINGS_KEY, JSON.stringify(bookings));
       renderAdminBookingsTable();
+
+      // Automatically broadcast to all other open admin dashboard devices in real-time
+      if (shouldBroadcast) {
+        broadcastBookingToCloudSync(newEntry);
+      }
+      return newEntry;
+    }
+
+    // Real-Time Multi-Device Auto-Sync Engine
+    let syncEventSource = null;
+    function initRealtimeAdminSync() {
+      // 1. Cross-tab instant synchronization on same browser
+      window.addEventListener('storage', (e) => {
+        if (e.key === ADMIN_BOOKINGS_KEY) {
+          renderAdminBookingsTable();
+        }
+      });
+
+      // 2. Cross-device instant Server-Sent Events (SSE) listener
+      function connectSSE() {
+        if (syncEventSource) {
+          try { syncEventSource.close(); } catch (_) { }
+        }
+
+        try {
+          syncEventSource = new EventSource(`https://ntfy.sh/${ARAKU_SYNC_TOPIC}/sse`);
+          syncEventSource.onmessage = (event) => {
+            try {
+              const payload = JSON.parse(event.data);
+              if (payload && payload.message) {
+                let syncedRecord = null;
+                try {
+                  syncedRecord = typeof payload.message === 'string' ? JSON.parse(payload.message) : payload.message;
+                } catch (_) {
+                  syncedRecord = null;
+                }
+                if (syncedRecord && syncedRecord.name && (syncedRecord.phone || syncedRecord.date)) {
+                  saveCustomerBookingRecord(syncedRecord, false);
+                }
+              }
+            } catch (err) {
+              console.log("Sync message parsing notice:", err);
+            }
+          };
+
+          syncEventSource.onerror = () => {
+            if (syncEventSource) {
+              try { syncEventSource.close(); } catch (_) { }
+              syncEventSource = null;
+            }
+            setTimeout(connectSSE, 6000);
+          };
+        } catch (e) {
+          console.log("SSE connection notice:", e);
+        }
+      }
+
+      connectSSE();
+
+      // 3. Periodic cloud polling backup (every 10s) ensuring zero missed bookings even during network hops
+      async function pollRemoteBookings() {
+        try {
+          const res = await fetch(`https://ntfy.sh/${ARAKU_SYNC_TOPIC}/json?poll=1&limit=30`);
+          if (res.ok) {
+            const text = await res.text();
+            if (text) {
+              const lines = text.trim().split('\n');
+              for (const line of lines) {
+                if (!line.trim()) continue;
+                try {
+                  const entry = JSON.parse(line);
+                  if (entry && entry.message) {
+                    const rec = typeof entry.message === 'string' ? JSON.parse(entry.message) : entry.message;
+                    if (rec && rec.name && (rec.phone || rec.date)) {
+                      saveCustomerBookingRecord(rec, false);
+                    }
+                  }
+                } catch (_) { }
+              }
+            }
+          }
+        } catch (_) { }
+      }
+
+      // Initial catch-up on load & recurring 10-second sync poll
+      pollRemoteBookings();
+      setInterval(pollRemoteBookings, 10000);
     }
 
     // Modal Display Management
@@ -1724,7 +1835,10 @@
         openAdminModal('reset');
       }
     }
-    window.addEventListener('DOMContentLoaded', checkAdminUrlRoutes);
+    window.addEventListener('DOMContentLoaded', () => {
+      checkAdminUrlRoutes();
+      initRealtimeAdminSync();
+    });
     window.addEventListener('hashchange', checkAdminUrlRoutes);
 
     // --------------------------------------------------------
